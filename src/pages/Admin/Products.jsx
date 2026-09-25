@@ -221,7 +221,7 @@ const AdminProducts = () => {
       category_id: Number(form.category_id),
       sku: form.sku.trim(),
       description: form.description.trim() || form.title.trim(),
-      short_description: form.description.trim() || null,
+      // short_description: form.description.trim() || null,
       status: 'ACTIVE',
       stock: parseInt(form.stock, 10) || 0,
     }
