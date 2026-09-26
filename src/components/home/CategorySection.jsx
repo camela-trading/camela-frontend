@@ -8,7 +8,7 @@ import { useGetCategoriesQuery } from '../../services/productsApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 import { CATEGORIES } from '../../data/brands'
 
-const CategoryCard = ({ category, index, count }) => {
+const CategoryCard = ({ category, index }) => {
   const { t } = useTranslation()
   const { ref, hasIntersected } = useIntersectionObserver({ once: true, threshold: 0.1 })
 
@@ -30,9 +30,9 @@ const CategoryCard = ({ category, index, count }) => {
 
         {/* Content */}
         <div className="absolute inset-0 flex flex-col justify-end p-5">
-          <p className="text-white/70 text-xs font-medium uppercase tracking-widest mb-1">
+          {/* <p className="text-white/70 text-xs font-medium uppercase tracking-widest mb-1">
             {count}+ items
-          </p>
+          </p> */}
           <h3 className="text-white font-display font-bold text-xl mb-3 group-hover:translate-x-1 transition-transform duration-300">
             {category.name}
           </h3>
@@ -58,12 +58,12 @@ const CategorySection = () => {
   // Fallback to static categories if API returns none
   const categories = apiCategories.length >= 2 ? apiCategories : CATEGORIES
 
-  // Count products per category
-  const categoryCounts = categories.reduce((acc, category) => {
-    const count = products.filter(p => p.category === category.name).length
-    acc[category.id] = count
-    return acc
-  }, {})
+  // // Count products per category
+  // const categoryCounts = categories.reduce((acc, category) => {
+  //   const count = products.filter(p => p.category === category.name).length
+  //   acc[category.id] = count
+  //   return acc
+  // }, {})
 
   return (
     <section className="py-20 bg-surface-secondary dark:bg-surface-dark-secondary">
@@ -76,9 +76,9 @@ const CategorySection = () => {
             transition={{ duration: 0.6 }}
           >
             <p className="text-xs font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400 mb-2">
-              {t('home.category.subtitle')}
+              {t('home.exploreProduct.subtitle')}
             </p>
-            <h2 className="section-title">{t('home.category.title')}</h2>
+            <h2 className="section-title">{t('home.exploreProduct.title')}</h2>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -89,8 +89,8 @@ const CategorySection = () => {
               to="/shop"
               className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors group"
             >
-              {t('header.viewAllCategories')}
-              <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
+              {/* {t('header.viewAllCategories')} */}
+              {/* <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" /> */}
             </Link>
           </motion.div>
         </div>
@@ -98,7 +98,7 @@ const CategorySection = () => {
         {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {categories.slice(0, 6).map((category, i) => (
-            <CategoryCard key={category.id} category={category} index={i} count={categoryCounts[category.id] || 0} />
+            <CategoryCard key={category.id} category={category} index={i} />
           ))}
         </div>
       </div>

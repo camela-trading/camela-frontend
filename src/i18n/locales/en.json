@@ -39,9 +39,10 @@
       "title": "Browse by Category",
       "viewAll": "View All"
     },
-    "category": {
-      "title": "Browse by Category",
-      "subtitle": "Shop by Category"
+    "exploreProduct": {
+      "title": "Explore Our Products",
+      "subtitle": "Find the right product for yor needs"
+
     },
     "featured": {
       "tag": "Handpicked selections for you",

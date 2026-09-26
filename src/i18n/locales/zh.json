@@ -43,6 +43,10 @@
       "title": "按类别浏览",
       "subtitle": "按分类购物"
     },
+    "exploreProduct": {
+      "title": "探索我们的产品",
+      "subtitle": "找到适合您需求的产品"
+    },
     "featured": {
       "tag": "为您精心挑选",
       "title": "精选产品",
