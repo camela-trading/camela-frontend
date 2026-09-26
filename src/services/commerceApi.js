@@ -64,7 +64,24 @@ const adminProduct = (product) => ({
     short_description: product.short_description,
 })
 
+
+
 export const commerceService = {
+  
+  // added by darah
+  async getAdminCategories(token) {
+    const response = await client(token).get('/admin/categories')
+    return response.data.data
+  },
+  async createAdminCategory(token, payload) {
+    const response = await client(token).post('/admin/categories', payload)
+    return response.data.data
+  },
+  async updateAdminCategory(token, id, payload) {
+    const response = await client(token).patch(`/admin/categories/${id}`, payload)
+    return response.data.data
+  },
+
   async getCart(token) {
     const response = await client(token).get('/cart')
     return response.data.data.items.map(cartItem)

@@ -16,6 +16,7 @@ import {
   Loader2,
   Upload,
   Trash2,
+  Tag, // added by darah 
 } from 'lucide-react'
 import { formatPrice } from '../../utils/formatters'
 import Rating from '../../components/ui/Rating'
@@ -35,7 +36,11 @@ const resolveProductPreviewSrc = (src) => {
 
 const AdminProducts = () => {
   const token = useSelector(selectAuth).token
-  const { data: categories = [] } = useGetCategoriesQuery()
+  const { data: categories = [], refetch: refetchCategories } = useGetCategoriesQuery() // changed by darah
+  const [showCategoryManager, setShowCategoryManager] = useState(false)
+  const [editingCategory, setEditingCategory] = useState(null) // added by darah
+  const [categoryName, setCategoryName] = useState('') // added by darah
+  const [categorySaving, setCategorySaving] = useState(false) // added by darah
   const [products, setProducts] = useState([])
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
@@ -333,6 +338,47 @@ const AdminProducts = () => {
     } catch { toast.error('Unable to delete product') }
   }
 
+  // added by drah
+  const openCategoryManager = () => {
+  setEditingCategory(null)
+  setCategoryName('')
+  setShowCategoryManager(true)
+}
+
+  const startEditCategory = (category) => {
+    setEditingCategory(category)
+    setCategoryName(category.name)
+  }
+
+  const cancelEditCategory = () => {
+    setEditingCategory(null)
+    setCategoryName('')
+  }
+
+  const handleSaveCategory = async () => {
+    const name = categoryName.trim()
+    if (!name) { toast.error('Category name is required'); return }
+
+    try {
+      setCategorySaving(true)
+      if (editingCategory) {
+        await commerceService.updateAdminCategory(token, editingCategory.id, { name })
+        toast.success('Category updated!')
+      } else {
+        await commerceService.createAdminCategory(token, { name })
+        toast.success('Category added!')
+      }
+      await refetchCategories()
+      cancelEditCategory()
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Unable to save category')
+    } finally {
+      setCategorySaving(false)
+    }
+  }
+
+  // aded by darah
+
   const closeModal = () => {
     form.files.forEach(({ preview }) => {
       if (preview && String(preview).startsWith('blob:')) {
@@ -380,14 +426,27 @@ const AdminProducts = () => {
             className="input-base pl-10 h-9"
           />
         </div>
-        <select
-          value={categoryFilter}
-          onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); clearSelection() }}
-          className="input-base h w-full sm:w-52"
-        >
-          <option value="">All Categories</option>
-          {allCategories.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
+        {/* added by darah */}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <select
+            value={categoryFilter}
+            onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); clearSelection() }}
+            className="input-base h w-full sm:w-52"
+          >
+            <option value="">All Categories</option>
+            {allCategories.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <button
+            type="button"
+            onClick={openCategoryManager}
+            title="Edit Categories"
+            aria-label="Edit Categories"
+            className="btn-outline btn-sm gap-2 shrink-0"
+          >
+            <Tag size={14} /> Edit Categories
+          </button>
+        </div>
+        {/* until here */}
         <div className="flex flex-wrap items-center gap-2">
           <button onClick={handleBulkDuplicate} disabled={!selectedIds.length || bulkLoading} className="btn-outline btn-sm gap-2 disabled:opacity-40">
             {bulkLoading ? <Loader2 size={13} className="animate-spin" /> : <Copy size={13} />}
@@ -713,6 +772,58 @@ const AdminProducts = () => {
         <div className="flex gap-3 pt-5">
           <button onClick={() => setDeleteId(null)} className="btn-outline btn-md flex-1 justify-center">Cancel</button>
           <button onClick={handleDelete} className="btn bg-brand-600 text-white hover:bg-brand-700 btn-md flex-1 justify-center">Delete</button>
+        </div>
+      </Modal>
+      {/* modal added by darah */}
+      <Modal isOpen={showCategoryManager} onClose={() => { setShowCategoryManager(false); cancelEditCategory() }} title="Manage Categories" size="sm">
+        <div className="space-y-4">
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {categories.map((category) => (
+              <div key={category.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                {editingCategory?.id === category.id ? (
+                  <input
+                    value={categoryName}
+                    onChange={(e) => setCategoryName(e.target.value)}
+                    className="input-base h-8 text-sm flex-1"
+                    autoFocus
+                  />
+                ) : (
+                  <span className="text-sm text-gray-700 dark:text-gray-200">{category.name}</span>
+                )}
+                <div className="flex items-center gap-1 shrink-0">
+                  {editingCategory?.id === category.id ? (
+                    <>
+                      <button onClick={handleSaveCategory} disabled={categorySaving} className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-40">
+                        <Check size={14} />
+                      </button>
+                      <button onClick={cancelEditCategory} disabled={categorySaving} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-40">
+                        <X size={14} />
+                      </button>
+                    </>
+                  ) : (
+                    <button onClick={() => startEditCategory(category)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                      <Pencil size={13} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {!editingCategory && (
+            <div className="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+              <input
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                placeholder="New category name..."
+                className="input-base h-9 text-sm flex-1"
+              />
+              <button onClick={handleSaveCategory} disabled={categorySaving} className="btn-brand btn-sm gap-1 disabled:opacity-60">
+                {categorySaving ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
+                Add
+              </button>
+            </div>
+          )}
         </div>
       </Modal>
     </div>
