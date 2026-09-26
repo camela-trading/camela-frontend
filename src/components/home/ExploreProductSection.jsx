@@ -8,7 +8,7 @@ import { useGetCategoriesQuery } from '../../services/productsApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 import { CATEGORIES } from '../../data/brands'
 
-const CategoryCard = ({ category, index }) => {
+const ExploreProductCard = ({ category, index }) => {
   const { t } = useTranslation()
   const { ref, hasIntersected } = useIntersectionObserver({ once: true, threshold: 0.1 })
 
@@ -49,7 +49,7 @@ const CategoryCard = ({ category, index }) => {
   )
 }
 
-const CategorySection = () => {
+const ExploreProductSection = () => {
   const { t } = useTranslation()
   const { ref, hasIntersected } = useIntersectionObserver({ once: true })
   const { data: products = [] } = useProducts()
@@ -98,7 +98,7 @@ const CategorySection = () => {
         {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {categories.slice(0, 6).map((category, i) => (
-            <CategoryCard key={category.id} category={category} index={i} />
+            <ExploreProductCard key={category.id} category={category} index={i} />
           ))}
         </div>
       </div>
@@ -106,4 +106,4 @@ const CategorySection = () => {
   )
 }
 
-export default CategorySection
+export default ExploreProductSection

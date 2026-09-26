@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import HeroSection from '../../components/home/HeroSection'
-import CategorySection from '../../components/home/CategorySection'
+import ExploreProductSection from '../../components/home/ExploreProductSection'
 import JoinFamilySection from '../../components/home/JoinFamilySection'
 import FeaturedProducts from '../../components/home/FeaturedProducts'
 import FlashSale from '../../components/home/FlashSale'
@@ -14,7 +14,7 @@ const Home = () => {
   return (
     <>
       <HeroSection />
-      <CategorySection />
+      <ExploreProductSection />
       <JoinFamilySection />
       <FeaturedProducts
         title={t('home.featured.title')}
