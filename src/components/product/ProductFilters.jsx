@@ -182,7 +182,7 @@ const ProductFilters = ({ onClose, activeCategory }) => {
       </FilterSection>
 
       {/* Rating */}
-      <FilterSection title={t('filter.minRating')}>
+      {/* <FilterSection title={t('filter.minRating')}>
         <div className="space-y-1.5">
           {[4, 3, 2, 1].map((star) => (
             <button
@@ -210,7 +210,7 @@ const ProductFilters = ({ onClose, activeCategory }) => {
             </button>
           ))}
         </div>
-      </FilterSection>
+      </FilterSection> */}
     </div>
   )
 }
