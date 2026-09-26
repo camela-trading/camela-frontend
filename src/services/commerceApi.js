@@ -58,8 +58,12 @@ const adminProduct = (product) => ({
     category_id: product.category_id,
 
     image: resolveApiAssetUrl(product.image),
+    // added by darah
     images: (product.images || []).map((image) => resolveApiAssetUrl(image)),
-
+    imageRecords: (product.images_detailed || []).map((img) => ({
+      id: img.id,
+      url: resolveApiAssetUrl(img.url),
+    })),
     description: product.description,
     short_description: product.short_description,
 })
@@ -326,6 +330,10 @@ export const commerceService = {
     files.forEach(({ file }) => formData.append('images[]', file))
     const response = await client(token).post(`/admin/products/${productId}/images`, formData)
     return response.data.data
+  },
+  // added by darah
+  async deleteProductImage(token, imageId) {
+    await client(token).delete(`/admin/products/images/${imageId}`)
   },
 
   async getAdminCustomers(token) {

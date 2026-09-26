@@ -27,7 +27,7 @@ import { commerceService } from '../../services/commerceApi'
 import { useGetCategoriesQuery } from '../../services/productsApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 
-const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', image: '', stock: '', imagePreview: '', images: [], files: [] }
+const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [] }
 
 const resolveProductPreviewSrc = (src) => {
   if (!src) return ''
@@ -166,6 +166,7 @@ const AdminProducts = () => {
       stock: String(product.stock || ''),
       imagePreview: product.image || '',
       images: product.images || (product.image ? [product.image] : []),
+       imageRecords: product.imageRecords || [], // added by darah
       files: [],
     })
     setEditProduct(product)
@@ -189,11 +190,22 @@ const AdminProducts = () => {
   const handleImageUrl = (url) => {
     if (url) toast.error('Use Upload from Device to add product images')
   }
+// added by darah
+  const handleRemoveImage = async (index) => {
+    const removedImage = form.images[index]
+    const record = form.imageRecords.find((r) => r.url === removedImage)
 
-  const handleRemoveImage = (index) => {
+    if (record) {
+      try {
+        await commerceService.deleteProductImage(token, record.id)
+      } catch {
+        toast.error('Unable to delete image')
+        return
+      }
+    }
+
     setForm((f) => {
       const newImages = f.images.filter((_, i) => i !== index)
-      const removedImage = f.images[index]
       const fileIndex = f.files.findIndex((item) => item.preview === removedImage)
 
       if (removedImage && String(removedImage).startsWith('blob:')) {
@@ -203,6 +215,7 @@ const AdminProducts = () => {
       return {
         ...f,
         images: newImages,
+        imageRecords: f.imageRecords.filter((r) => r.url !== removedImage),
         files: fileIndex === -1 ? f.files : f.files.filter((_, i) => i !== fileIndex),
         image: newImages[0] || '',
         imagePreview: newImages[0] || '',
