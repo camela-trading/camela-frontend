@@ -31,7 +31,7 @@ import { getRelatedProducts, cn, resolveProductImageUrl } from '../../utils/help
 import toast from 'react-hot-toast'
 
 const ProductDetail = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation() // added by darah il8n for language detection
   const { formatPrice } = useCurrency()
   const { id } = useParams()
   const { data: product, isLoading, error } = useProduct(id)
@@ -67,6 +67,11 @@ const ProductDetail = () => {
       <Link to="/shop" className="btn-brand btn-md">{t('product.backToShop')}</Link>
     </div>
   )
+  const localizedDescription =  // localized description based on current language | added by Darah
+    (i18n.language === 'ms' && product.description_ms) ||
+    (i18n.language === 'zh' && product.description_zh) ||
+    product.description
+
 
   const originalPrice = product.compare_price
   const discountPercent = Number(originalPrice) > Number(product.price)
@@ -107,7 +112,8 @@ const ProductDetail = () => {
       label: t('product.description'),
       content: (
         <div className="prose prose-sm dark:prose-invert max-w-none">
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{product.description}</p>
+          {/* originally productdescription, handle translations */}
+          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{localizedDescription}</p> 
         </div>
       ),
     },

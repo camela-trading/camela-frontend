@@ -23,11 +23,11 @@ import Rating from '../../components/ui/Rating'
 import Modal from '../../components/ui/Modal'
 import toast from 'react-hot-toast'
 import { selectAuth } from '../../features/auth/authSlice'
-import { commerceService } from '../../services/commerceApi'
+import { commerceService } from '../../services/commerceApi' 
 import { useGetCategoriesQuery } from '../../services/productsApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 
-const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [] }
+const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', description_ms: '', description_zh: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [] } // added by darah description translations and image records
 
 const resolveProductPreviewSrc = (src) => {
   if (!src) return ''
@@ -162,6 +162,8 @@ const AdminProducts = () => {
       category_id: String(product.category_id || ''),
       sku: product.sku || '',
       description: product.description || '',
+      description_ms: product.description_ms || '', // added by darah
+      description_zh: product.description_zh || '', // added by darah
       image: product.image || '',
       stock: String(product.stock || ''),
       imagePreview: product.image || '',
@@ -239,6 +241,8 @@ const AdminProducts = () => {
       category_id: Number(form.category_id),
       sku: form.sku.trim(),
       description: form.description.trim() || form.title.trim(),
+      description_ms: form.description_ms.trim() || null, // added by darah
+      description_zh: form.description_zh.trim() || null, // added by darah
       // short_description: form.description.trim() || null,
       status: 'ACTIVE',
       stock: parseInt(form.stock, 10) || 0,
@@ -768,6 +772,28 @@ const AdminProducts = () => {
             />
           </div>
 
+          {/* Description in Malay added by darah */}
+          <div>
+            <label className="label-base">Description (Malay)</label>
+            <textarea
+              value={form.description_ms}
+              onChange={(e) => setForm((f) => ({ ...f, description_ms: e.target.value }))}
+              rows={3}
+              className="input-base resize-none"
+              placeholder="Terangkan produk..."
+            />
+          </div>
+          {/* Description in Chinese added by darah */}
+          <div>
+            <label className="label-base">Description (Chinese)</label>
+            <textarea
+              value={form.description_zh}
+              onChange={(e) => setForm((f) => ({ ...f, description_zh: e.target.value }))}
+              rows={3}
+              className="input-base resize-none"
+              placeholder="描述产品..."
+            />
+          </div>
           {/* Actions */}
           <div className="flex gap-3 pt-2">
             <button onClick={closeModal} className="btn-outline btn-md flex-1 justify-center">Cancel</button>

@@ -65,6 +65,8 @@ const adminProduct = (product) => ({
       url: resolveApiAssetUrl(img.url),
     })),
     description: product.description,
+    description_ms: product.description_ms,
+    description_zh: product.description_zh,
     short_description: product.short_description,
 })
 
