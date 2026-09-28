@@ -117,26 +117,26 @@ const ProductDetail = () => {
         </div>
       ),
     },
-    {
-      id: 'specs',
-      label: t('product.specifications'),
-      content: (
-        <div className="space-y-3">
-          {[ 
-            { label: t('product.category'), value: product.category },
-            { label: 'Product ID', value: `#${product.id}` },
-            ...(product.rating ? [{ label: t('product.rating'), value: `${product.rating.rate}/5 (${product.rating.count} ${t('product.reviews').toLowerCase()})` }] : []),
-            { label: t('product.availability'), value: product.stock > 0 ? t('product.inStock') : t('product.outOfStock') },
-            { label: t('product.sku'), value: product.sku },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex justify-between py-3 border-b border-gray-100 dark:border-gray-800 last:border-0 text-sm">
-              <span className="text-gray-500 dark:text-gray-400">{label}</span>
-              <span className="font-medium text-gray-900 dark:text-white capitalize">{value}</span>
-            </div>
-          ))}
-        </div>
-      ),
-    },
+    // {
+    //   id: 'specs',
+    //   label: t('product.specifications'),
+    //   content: (
+    //     <div className="space-y-3">
+    //       {[ 
+    //         { label: t('product.category'), value: product.category },
+    //         { label: 'Product ID', value: `#${product.id}` },
+    //         ...(product.rating ? [{ label: t('product.rating'), value: `${product.rating.rate}/5 (${product.rating.count} ${t('product.reviews').toLowerCase()})` }] : []),
+    //         { label: t('product.availability'), value: product.stock > 0 ? t('product.inStock') : t('product.outOfStock') },
+    //         { label: t('product.sku'), value: product.sku },
+    //       ].map(({ label, value }) => (
+    //         <div key={label} className="flex justify-between py-3 border-b border-gray-100 dark:border-gray-800 last:border-0 text-sm">
+    //           <span className="text-gray-500 dark:text-gray-400">{label}</span>
+    //           <span className="font-medium text-gray-900 dark:text-white capitalize">{value}</span>
+    //         </div>
+    //       ))}
+    //     </div>
+    //   ),
+    // },
     ...(product.rating
       ? [{
         id: 'reviews',
