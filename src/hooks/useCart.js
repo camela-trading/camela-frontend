@@ -13,12 +13,18 @@ import { commerceService } from '../services/commerceApi'
 import toast from 'react-hot-toast'
 import { useCurrency } from '../contexts/CurrencyContext'
 import { calculateShipping, useShippingSettings } from './useShippingSettings'
+import { getLineTotal } from '../utils/helpers'
 
 export const useCart = () => {
   const dispatch = useDispatch()
   const items = useSelector(selectCartItems)
   const count = useSelector(selectCartCount)
-  const subtotal = useSelector(selectCartSubtotal)
+  // const subtotal = useSelector(selectCartSubtotal)
+  //changed by darah, calculate subtotal considering promo offers
+  const subtotal = useMemo(
+  () => items.reduce((sum, item) => sum + getLineTotal(item, item.quantity), 0),
+  [items]
+)
   const coupon = useSelector(selectCoupon)
   const shippingSettings = useShippingSettings()
   const { selectedCurrency: currency, rate, formatPrice: formatCartPrice, setCurrency } = useCurrency()

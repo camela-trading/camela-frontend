@@ -17,6 +17,7 @@ import { commerceService } from '../../services/commerceApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 import { useCurrency } from '../../contexts/CurrencyContext'
 import { calculateShipping } from '../../hooks/useShippingSettings'
+import { getLineTotal } from '../../utils/helpers'
 
 const COUNTRIES = [
   'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia',
@@ -312,7 +313,9 @@ const Checkout = () => {
               <p className="text-xs font-medium text-gray-800 dark:text-gray-200 line-clamp-2">{item.title}</p>
             </div>
             <span className="text-sm font-semibold text-gray-900 dark:text-white flex-shrink-0">
-              {formatCartPrice(item.price * item.quantity)}
+              {/* {formatCartPrice(item.price * item.quantity)} */}
+              {/* changed by darah */}
+              {formatCartPrice(getLineTotal(item, item.quantity))} 
             </span>
           </div>
         ))}
@@ -568,7 +571,8 @@ const Checkout = () => {
                                 <p className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1">{item.title}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">{item.quantity} × {formatCartPrice(item.price)}</p>
                               </div>
-                              <span className="text-sm font-semibold text-gray-900 dark:text-white">{formatCartPrice(item.price * item.quantity)}</span>
+                              {/* <span className="text-sm font-semibold text-gray-900 dark:text-white">{formatCartPrice(item.price * item.quantity)}</span> */}
+                              <span className="text-sm font-semibold text-gray-900 dark:text-white">{formatCartPrice(getLineTotal(item, item.quantity))}</span>
                             </div>
                           ))}
                         </div>

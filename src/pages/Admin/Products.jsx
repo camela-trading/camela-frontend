@@ -27,7 +27,7 @@ import { commerceService } from '../../services/commerceApi'
 import { useGetCategoriesQuery } from '../../services/productsApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 
-const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', description_ms: '', description_zh: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [] } // added by darah description translations and image records
+const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', description_ms: '', description_zh: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [], compare_price: '', promo_buy: '', promo_free: '',} // added by darah description translations and image records
 
 const resolveProductPreviewSrc = (src) => {
   if (!src) return ''
@@ -159,6 +159,9 @@ const AdminProducts = () => {
     setForm({
       title: product.title || '',
       price: String(product.price || ''),
+      compare_price: String(product.compare_price || ''), // added by darah
+      promo_buy: String(product.promo_buy || ''), // added by darah
+      promo_free: String(product.promo_free || ''), // added by darah
       category_id: String(product.category_id || ''),
       sku: product.sku || '',
       description: product.description || '',
@@ -246,6 +249,9 @@ const AdminProducts = () => {
       // short_description: form.description.trim() || null,
       status: 'ACTIVE',
       stock: parseInt(form.stock, 10) || 0,
+      compare_price: String(form.compare_price || ''), // added by darah
+      promo_buy: String(form.promo_buy || ''), // added by darah
+      promo_free: String(form.promo_free || ''), // added by darah
     }
     try {
       const savedProduct = editProduct
@@ -584,7 +590,16 @@ const AdminProducts = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-3 font-semibold text-gray-900 dark:text-white text-xs">{formatPrice(product.price)}</td>
+                    {/* added by darah  */}
+                    <td className="px-5 py-3 text-xs">
+                      <span className="font-semibold text-gray-900 dark:text-white">{formatPrice(product.price)}</span>  
+                      {product.compare_price > product.price && (
+                        <span className="ml-2 text-gray-400 line-through">{formatPrice(product.compare_price)}</span>
+                      )}
+                      {product.promo_buy > 0 && product.promo_free > 0 && (
+                        <span className="block text-[10px] text-brand-600">Buy {product.promo_buy} Get {product.promo_free} Free</span>
+                      )}
+                    </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
 
@@ -743,6 +758,43 @@ const AdminProducts = () => {
                 className="input-base"
                 placeholder="0"
                 min="0"
+              />
+            </div>
+          </div>
+
+          {/* Usual price + Promo  added by darah*/}
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="label-base">Usual Price (crossed out)</label>
+              <input
+                type="number"
+                value={form.compare_price}
+                onChange={(e) => setForm((f) => ({ ...f, compare_price: e.target.value }))}
+                className="input-base"
+                placeholder="e.g. 3480"
+                min="0"
+              />
+            </div>
+            <div>
+              <label className="label-base">Promo: Buy</label>
+              <input
+                type="number"
+                value={form.promo_buy}
+                onChange={(e) => setForm((f) => ({ ...f, promo_buy: e.target.value }))}
+                className="input-base"
+                placeholder="2"
+                min="1"
+              />
+            </div>
+            <div>
+              <label className="label-base">Promo: Get Free</label>
+              <input
+                type="number"
+                value={form.promo_free}
+                onChange={(e) => setForm((f) => ({ ...f, promo_free: e.target.value }))}
+                className="input-base"
+                placeholder="1"
+                min="1"
               />
             </div>
           </div>

@@ -24,6 +24,7 @@ const ProductCard = ({ product, view = 'grid' }) => {
   const isInWishlist = useSelector(selectIsInWishlist(product.id))
   const originalPrice = product.compare_price
   const isSale = Number(originalPrice) > Number(product.price)
+  const hasPromo = product.promo_buy > 0 && product.promo_free > 0
 
   const productImages = product.images && product.images.length > 0 ? product.images : [product.image]
   const currentImage =
@@ -79,14 +80,20 @@ const ProductCard = ({ product, view = 'grid' }) => {
           </div>
           <Rating rating={product.rating?.rate} count={product.rating?.count} className="mt-2" />
           <div className="flex items-center justify-between mt-3">
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
-                {formatPrice(product.price)}
+          {/* added by Darah - promo */}
+          <div className="flex items-center gap-2 flex-wrap min-h-[28px]">
+            <span className="text-lg font-bold text-gray-900 dark:text-white">
+              {formatPrice(product.price)}
+            </span>
+            {isSale && (
+              <span className="text-sm text-gray-400 line-through">{formatPrice(originalPrice)}</span>
+            )}
+            {hasPromo && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-600 text-white">
+                Buy {product.promo_buy} Get {product.promo_free} Free
               </span>
-              {isSale && (
-                <span className="text-sm text-gray-400 line-through">{formatPrice(originalPrice)}</span>
-              )}
-            </div>
+            )}
+          </div>
             <button
               onClick={() => addToCart(product)}
               className="btn-brand btn-sm gap-2"
@@ -185,10 +192,19 @@ const ProductCard = ({ product, view = 'grid' }) => {
         <Rating rating={product.rating?.rate} count={product.rating?.count} size="xs" className="mb-3" />
 
         <div className="space-y-3 mt-auto">
+          {/* show the promos | added by darah */}
           <div className="flex items-center gap-2 flex-wrap min-h-[28px]">
             <span className="text-lg font-bold text-gray-900 dark:text-white">
               {formatPrice(product.price)}
             </span>
+            {isSale && (
+              <span className="text-sm text-gray-400 line-through">{formatPrice(originalPrice)}</span>
+            )}
+            {hasPromo && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-600 text-white">
+                Buy {product.promo_buy} Get {product.promo_free} Free
+              </span>
+            )}
           </div>
           <motion.button
             whileTap={{ scale: 0.95 }}

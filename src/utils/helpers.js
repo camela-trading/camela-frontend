@@ -28,6 +28,13 @@ export const filterProducts = (products, filters) => {
   })
 }
 
+export const getLineTotal = (product, qty) => {  // Calculate line total considering promo offers | added by Darah
+  const { promo_buy, promo_free, price } = product
+  if (!promo_buy || !promo_free) return price * qty
+  const free = Math.floor(qty / (promo_buy + promo_free)) * promo_free
+  return price * (qty - free)
+}
+
 export const searchProducts = (products, query) => {
   if (!query.trim()) return products
   const q = query.toLowerCase()

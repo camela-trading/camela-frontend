@@ -9,6 +9,7 @@ import { useCart } from '../../hooks/useCart'
 import { ROUTES } from '../../constants/routes'
 import { resolveApiAssetUrl } from '../../constants/config'
 
+// i think this is not used ??
 const CartDrawer = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()

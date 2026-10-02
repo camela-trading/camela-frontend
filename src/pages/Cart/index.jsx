@@ -6,6 +6,7 @@ import { ShoppingBag, Trash2, Plus, Minus, Tag, X, ArrowRight, ArrowLeft } from 
 import { useCart } from '../../hooks/useCart'
 import { ROUTES } from '../../constants/routes'
 import { resolveApiAssetUrl } from '../../constants/config'
+import { getLineTotal } from '../../utils/helpers'
 
 const Cart = () => {
   const { t } = useTranslation()
@@ -136,10 +137,21 @@ const Cart = () => {
                           </button>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-gray-900 dark:text-white">
+                          {/* <p className="font-bold text-gray-900 dark:text-white">
                             {formatCartPrice(item.price * item.quantity)}
+                          </p> */}
+                          {/* changes by darah */}
+                          <p className="font-bold text-gray-900 dark:text-white">
+                            {formatCartPrice(getLineTotal(item, item.quantity))}
                           </p>
                           <p className="text-xs text-gray-400">{formatCartPrice(item.price)} {t('cart.each')}</p>
+                          {/* added by darah, show the promo under each price */}
+                          {item.promo_buy > 0 && item.promo_free > 0 && (
+                            <p className="text-xs text-brand-600">
+                              Buy {item.promo_buy} Get {item.promo_free} Free
+                              {item.quantity >= item.promo_buy + item.promo_free && ' (applied)'}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>

@@ -17,6 +17,8 @@ const cartItem = (item) => ({
   image: resolveApiAssetUrl(item.product.image),
   category: item.product.category,
   quantity: item.quantity,
+  promo_buy: item.product.promo_buy,
+  promo_free: item.product.promo_free,
 })
 
 const order = (value) => ({
@@ -68,6 +70,9 @@ const adminProduct = (product) => ({
     description_ms: product.description_ms,
     description_zh: product.description_zh,
     short_description: product.short_description,
+    promo_buy: product.promo_buy,
+    promo_free: product.promo_free,
+    compare_price: product.compare_price,
 })
 
 
