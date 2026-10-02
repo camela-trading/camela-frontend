@@ -218,7 +218,8 @@
     "over75": "满{{amount}}",
     "relatedProducts": "相关产品",
     "ssl": "256位SSL",
-    "verifiedReviews": "已验证评论"
+    "verifiedReviews": "已验证评论",
+    "save": "保存"
   },
   "dashboard": {
     "title": "我的仪表板",

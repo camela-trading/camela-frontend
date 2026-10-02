@@ -254,7 +254,7 @@ const ProductDetail = () => {
             <Rating rating={product.rating?.rate} count={product.rating?.count} size="md" />
 
             {/* Price */}
-            <div className="flex items-baseline gap-3">
+            {/* <div className="flex items-baseline gap-3">
               <span className="text-4xl font-display font-bold text-gray-900 dark:text-white">
                 {formatPrice(product.price)}
               </span>
@@ -263,6 +263,24 @@ const ProductDetail = () => {
                   <span className="text-xl text-gray-400 line-through">{formatPrice(originalPrice)}</span>
                   <Badge variant="sale">{t('product.save')} {discountPercent}%</Badge>
                 </>
+              )}
+            </div> */}
+            {/* Price */}
+            {/* change to show promos */}
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <span className="text-4xl font-display font-bold text-gray-900 dark:text-white">
+                {formatPrice(product.price)}
+              </span>
+              {discountPercent > 0 && (
+                <>
+                  <span className="text-xl text-gray-400 line-through">{formatPrice(originalPrice)}</span>
+                  <Badge variant="sale">{t('product.save')} {discountPercent}%</Badge>
+                </>
+              )}
+              {product.promo_buy > 0 && product.promo_free > 0 && (
+                <span className="text-sm font-semibold px-3 py-1 rounded-full bg-brand-600 text-white">
+                  Buy {product.promo_buy} Get {product.promo_free} Free
+                </span>
               )}
             </div>
 
@@ -348,6 +366,13 @@ const ProductDetail = () => {
                     <Plus size={15} />
                   </button>
                 </div>
+                {product.promo_buy > 0 && product.promo_free > 0 && (
+                  <p className="text-sm text-brand-600 mt-3">
+                    {quantity >= product.promo_buy + product.promo_free
+                      ? `Promo applied: you pay for ${quantity - Math.floor(quantity / (product.promo_buy + product.promo_free)) * product.promo_free} of ${quantity}`
+                      : `Add ${product.promo_buy + product.promo_free - quantity} more to get ${product.promo_free} free`}
+                  </p>
+                )}
               </div>
             </div>
 

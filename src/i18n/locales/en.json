@@ -222,7 +222,8 @@
     "over75": "Over {{amount}}",
     "relatedProducts": "Related Products",
     "ssl": "256-bit SSL",
-    "verifiedReviews": "Verified reviews"
+    "verifiedReviews": "Verified reviews",
+    "save": "Save"
   },
   "dashboard": {
     "title": "My Dashboard",

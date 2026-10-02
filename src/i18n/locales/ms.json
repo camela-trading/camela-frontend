@@ -212,7 +212,8 @@
     "easyReturns": "Pemulangan Mudah",
     "easyReturnsDesc": "30 hari",
     "securePay": "Bayaran Selamat",
-    "securePayDesc": "256-bit SSL"
+    "securePayDesc": "256-bit SSL",
+    "save": "Simpan"
   },
   "dashboard": {
     "title": "Papan Pemuka Saya",
