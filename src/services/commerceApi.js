@@ -176,10 +176,12 @@ export const commerceService = {
 
   },
 
-  async createHitPayPayment(token) {
-    const response = await client(token).post('/payments/create')
-    return response.data
-  },
+async createStripePayment(token, orderId) {
+  const response = await client(token).post('/payments/stripe/create', {
+    order_id: orderId,
+  })
+  return response.data
+},
   async getOrders(token) {
     const response = await client(token).get('/orders')
     return response.data.data.map(order)

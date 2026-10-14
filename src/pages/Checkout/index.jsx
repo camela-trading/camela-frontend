@@ -215,41 +215,36 @@ const Checkout = () => {
 
   const handleDeliverySubmit = () => { setStep(3) }
 
-  const handlePlaceOrder = async () => {
-    if (!items.length) {
-      toast.error('Your cart is empty')
+const handlePlaceOrder = async () => {
+  if (!items.length) {
+    toast.error('Your cart is empty')
+    return
+  }
+
+  setPlacing(true)
+  try {
+    const order = await commerceService.checkout(
+      token,
+      'STRIPE',
+      shippingAddressId,
+      null,
+      selectedShipping.id
+    )
+
+    dispatch(setCurrentOrder(order))
+
+    const payment = await commerceService.createStripePayment(token, order.orderId)
+    if (payment.payment_url) {
+      window.location.href = payment.payment_url
       return
     }
-
-    setPlacing(true)
-    try {
-     const order = await commerceService.checkout(
-
-          token,
-
-          'HITPAY',
-
-          shippingAddressId,
-
-          null,
-
-          selectedShipping.id
-
-      )
-
-      dispatch(setCurrentOrder(order))
-      const payment = await commerceService.createHitPayPayment(token)
-      if (payment.payment_url) {
-        window.location.href = payment.payment_url
-        return
-      }
-      toast.error(payment.message || 'Unable to start payment. Please try again.')
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Unable to place order')
-    } finally {
-      setPlacing(false)
-    }
+    toast.error(payment.message || 'Unable to start payment. Please try again.')
+  } catch (error) {
+    toast.error(error.response?.data?.message || 'Unable to place order')
+  } finally {
+    setPlacing(false)
   }
+}
 
   const StepIndicator = () => (
     <div className="flex items-center justify-center mb-10">
