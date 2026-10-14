@@ -165,7 +165,7 @@ const OrderRow = ({ order, index }) => {
                   <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Payment Method</h4>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
                     <p className="font-medium text-gray-900 dark:text-white capitalize">
-                      {order.payment.method === 'hitpay' ? 'HitPay' : order.payment.method}
+                      {order.payment.method === 'stripe' ? 'Stripe' : order.payment.method}
                     </p>
                     {order.payment.cardData && (
                       <p className="text-xs mt-1">

@@ -249,7 +249,7 @@ const Cart = () => {
               </Link>
 
               <div className="flex items-center justify-center gap-4 pt-2">
-                <span className="text-[10px] text-gray-400 font-medium">HitPay</span>
+                <span className="text-[10px] text-gray-400 font-medium">Stripe</span>
               </div>
             </div>
           </div>
