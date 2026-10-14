@@ -545,7 +545,10 @@
       "processing": "Processing...",
       "orderProcessing": "Order Processing",
       "shipped": "Shipped",
-      "delivered": "Delivered"
+      "delivered": "Delivered",
+      "est12": "Est. 1-2 days",
+  "est35": "Est. 3-5 days",
+  "est57": "Est. 5-7 days"
     
     }
   },
