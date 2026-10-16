@@ -655,7 +655,7 @@ const AdminProducts = () => {
       )}
 
       {/* Add / Edit Modal */}
-      <Modal isOpen={isModalOpen} onClose={closeModal} title={editProduct ? 'Edit Product' : 'Add New Product'} size="md">
+      <Modal isOpen={isModalOpen} onClose={closeModal} title={editProduct ? 'Edit Product' : 'Add New Product'} size="full" className="max-w-xl">
         <div className="space-y-4">
 
           {/* Image Upload */}
@@ -819,7 +819,7 @@ const AdminProducts = () => {
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               rows={3}
-              className="input-base resize-none"
+              className="input-base resize-y"
               placeholder="Describe the product..."
             />
           </div>
@@ -831,7 +831,7 @@ const AdminProducts = () => {
               value={form.description_ms}
               onChange={(e) => setForm((f) => ({ ...f, description_ms: e.target.value }))}
               rows={3}
-              className="input-base resize-none"
+              className="input-base resize-y"
               placeholder="Terangkan produk..."
             />
           </div>
@@ -842,7 +842,7 @@ const AdminProducts = () => {
               value={form.description_zh}
               onChange={(e) => setForm((f) => ({ ...f, description_zh: e.target.value }))}
               rows={3}
-              className="input-base resize-none"
+              className="input-base resize-y"
               placeholder="描述产品..."
             />
           </div>

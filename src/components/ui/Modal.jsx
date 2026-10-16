@@ -93,8 +93,10 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', className, hideC
             aria-modal="true"
             aria-label={title || 'Modal dialog'}
             className={cn(
-              'relative w-full bg-white dark:bg-gray-900 rounded-2xl shadow-premium z-10',
+              'relative w-full bg-white dark:bg-gray-900 rounded-2xl shadow-premium z-10 overflow-hidden',
               'border border-gray-100 dark:border-gray-800',
+              // cap overall modal height so it fits within the viewport
+              'max-h-[calc(100vh-4rem)]',
               sizes[size],
               className
             )}
@@ -114,7 +116,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', className, hideC
                 )}
               </div>
             )}
-            <div className="p-6">{children}</div>
+            <div className="p-6 overflow-y-auto max-h-[calc(100vh-8rem)]">{children}</div>
           </motion.div>
         </div>
       )}
