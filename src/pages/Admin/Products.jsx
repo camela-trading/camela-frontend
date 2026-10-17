@@ -735,7 +735,7 @@ const AdminProducts = () => {
           {/* Price + Stock */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label-base">Price (USD) <span className="text-brand-500">*</span></label>
+              <label className="label-base">Price (SGD) <span className="text-brand-500">*</span></label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                 <input
