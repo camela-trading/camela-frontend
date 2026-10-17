@@ -229,10 +229,10 @@ const Cart = () => {
                   <span>{t('cart.shipping')}</span>
                   <span>{totals.shipping === null ? '...' : formatCartPrice(totals.shipping)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                {/* <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>{t('cart.tax')}</span>
                   <span>{formatCartPrice(totals.tax)}</span>
-                </div>
+                </div> */}
                 <div className="divider" />
                 <div className="flex justify-between text-lg font-bold text-gray-900 dark:text-white">
                   <span>{t('cart.total')}</span>
