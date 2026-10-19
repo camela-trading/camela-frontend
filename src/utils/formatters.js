@@ -105,3 +105,17 @@ export const getOrderStatusLabel = (status) => {
   }
   return labels[value] || status
 }
+
+export const JNT_STATUS_LABELS = {
+  PENDING_PICKUP: 'Awaiting pickup',
+  ASSIGNED_PICKUP: 'Awaiting pickup',
+  ACCEPTED_PICKUP: 'Picked up',
+  ENROUTE_TO_HUB: 'In transit',
+  ARRIVED_AT_HUB: 'At J&T hub',
+  OUT_FOR_DELIVERY: 'Out for delivery',
+  DELIVERED: 'Delivered',
+  FAILED_DELIVERY: 'Delivery attempt failed',
+  RETURNED_TO_SENDER: 'Returned to sender',
+  CANCELLED: 'Cancelled',
+}
+export const getJntStatusLabel = (s) => JNT_STATUS_LABELS[s] || s || 'Not yet shipped'

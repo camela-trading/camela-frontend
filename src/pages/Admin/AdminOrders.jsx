@@ -6,7 +6,8 @@ import toast from 'react-hot-toast'
 import Modal from '../../components/ui/Modal'
 import { commerceService } from '../../services/commerceApi'
 import { useAuth } from '../../hooks/useAuth'
-import { formatDateShort, formatPrice, getOrderStatusColor, getOrderStatusLabel } from '../../utils/formatters'
+// import { formatDateShort, formatPrice, getOrderStatusColor, getOrderStatusLabel } from '../../utils/formatters'
+import { formatDateShort, formatPrice, getOrderStatusColor, getOrderStatusLabel, getJntStatusLabel } from '../../utils/formatters'
 
 const ALL_STATUSES = ['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled']
 
@@ -73,7 +74,7 @@ const AdminOrders = () => {
       return normalized
     } catch (err) {
       console.error(err)
-      toast.error('Failed to update order status.')
+      toast.error(err?.response?.data?.message || 'Failed to update order status.')
       throw err
     }
   }
@@ -236,10 +237,32 @@ const AdminOrders = () => {
                 <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300"><div className="flex justify-between"><span>Method</span><span className="uppercase">{orderDetails.payment_method}</span></div><div className="flex justify-between"><span>Payment</span><span className="capitalize">{String(orderDetails.payment_status || '').toLowerCase()}</span></div><div className="flex justify-between"><span>Subtotal</span><span>{formatPrice(orderDetails.subtotal)}</span></div><div className="flex justify-between"><span>Shipping</span><span>{formatPrice(orderDetails.shipping_fee)}</span></div><div className="flex justify-between border-t border-gray-200 pt-2 font-bold text-gray-900 dark:border-gray-700 dark:text-white"><span>Total</span><span>{formatPrice(orderDetails.grand_total)}</span></div></div>
               </section>
             </div>
-
+              {orderDetails.jnt_tracking_id && (
+                <section className="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+                  <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">J&T Delivery</h3>
+                  <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
+                    <div className="flex justify-between"><span>Tracking ID</span><span className="font-mono">{orderDetails.jnt_tracking_id}</span></div>
+                    <div className="flex justify-between"><span>Status</span><span>{getJntStatusLabel(orderDetails.jnt_status)}</span></div>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const res = await commerceService.getJntLabel(token, statusOrder.id)
+                        window.open(res.connote_label_url, '_blank')
+                      } catch { toast.error('Label not ready. Try again in a minute.') }
+                    }}
+                    className="btn-secondary mt-3"
+                  >
+                    Print label
+                  </button>
+                </section>
+              )}
             <section className="rounded-xl border border-yellow-500/40 bg-yellow-50/50 p-4 dark:bg-yellow-500/5">
               <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500">Process order status</label>
               <div className="relative"><select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="input-base h-11 w-full appearance-none pr-10"><option value="pending">Pending</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select><ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" /></div>
+              {selectedStatus === 'shipped' && !orderDetails.jnt_tracking_id && (
+  <p className="mt-2 text-xs text-amber-600">Saving will create a J&T shipment.</p>
+)}
             </section>
 
             <div className="flex items-center justify-end gap-3 pt-1">

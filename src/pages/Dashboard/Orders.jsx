@@ -11,7 +11,8 @@ import { AnimatePresence } from 'framer-motion'
 import { selectAuth } from '../../features/auth/authSlice'
 import { commerceService } from '../../services/commerceApi'
 import { resolveApiAssetUrl } from '../../constants/config'
-import { getOrderStatusColor, getOrderStatusLabel } from '../../utils/formatters'
+// import { getOrderStatusColor, getOrderStatusLabel } from '../../utils/formatters'
+import { getOrderStatusColor, getOrderStatusLabel, getJntStatusLabel } from '../../utils/formatters'
 
 const STATUS_STYLES = {
   confirmed: 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
@@ -80,6 +81,19 @@ const OrderRow = ({ order, index }) => {
             className="overflow-hidden"
           >
             <div className="px-5 pb-5 border-t border-gray-100 dark:border-gray-800 pt-4 space-y-4">
+              {order.jnt_tracking_id && (
+                <div className="rounded-xl bg-gray-50 dark:bg-gray-800/60 p-4 text-sm">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Delivery</h4>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500 dark:text-gray-400">Status</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{getJntStatusLabel(order.jnt_status)}</span>
+                  </div>
+                  <div className="flex justify-between mt-1">
+                    <span className="text-gray-500 dark:text-gray-400">Tracking no.</span>
+                    <span className="font-mono text-xs text-gray-900 dark:text-white">{order.jnt_tracking_id}</span>
+                  </div>
+                </div>
+              )}
               {/* Order Items */}
               <div className="space-y-3">
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Order Items</h4>

@@ -45,6 +45,8 @@ const order = (value) => ({
   payment: { method: value.payment_method, status: value.payment_status },
   address: value.shipping_address,
   billingAddress: value.billing_address,
+  jnt_tracking_id: value.jnt_tracking_id,
+  jnt_status: value.jnt_status,
 })
 
 const adminProduct = (product) => ({
@@ -116,7 +118,7 @@ export const commerceService = {
     const response = await client().get('/currencies')
     return response.data
   },
-  
+
   async addToCart(token, productId, quantity) {
     await client(token).post('/cart', { product_id: productId, quantity })
     return this.getCart(token)
@@ -373,5 +375,10 @@ async createStripePayment(token, orderId) {
 
       return response.data.data;
 
+  },
+
+  async getJntLabel(token, orderId) {
+    const response = await client(token).get(`/admin/orders/${orderId}/label`)
+    return response.data
   },
 }
