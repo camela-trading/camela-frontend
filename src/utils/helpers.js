@@ -35,6 +35,13 @@ export const getLineTotal = (product, qty) => {  // Calculate line total conside
   return price * (qty - free)
 }
 
+export const getGstNote = (items = []) => {
+  if (!items.length) return null
+  const bases = new Set(items.map((i) => i.price_basis || 'without_gst'))
+  if (bases.size > 1) return 'mixed'
+  return bases.has('with_gst') ? 'with_gst' : 'without_gst'
+}
+
 export const searchProducts = (products, query) => {
   if (!query.trim()) return products
   const q = query.toLowerCase()

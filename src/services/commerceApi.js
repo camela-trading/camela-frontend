@@ -19,6 +19,7 @@ const cartItem = (item) => ({
   quantity: item.quantity,
   promo_buy: item.product.promo_buy,
   promo_free: item.product.promo_free,
+  price_basis: item.product.price_basis,
 })
 
 const order = (value) => ({
@@ -75,8 +76,10 @@ const adminProduct = (product) => ({
     promo_buy: product.promo_buy,
     promo_free: product.promo_free,
     compare_price: product.compare_price,
+    price_without_gst: product.price_without_gst,
+    price_with_gst: product.price_with_gst,
+    price_basis: product.price_basis,
 })
-
 
 
 export const commerceService = {

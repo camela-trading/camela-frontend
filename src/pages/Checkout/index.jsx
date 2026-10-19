@@ -17,7 +17,7 @@ import { commerceService } from '../../services/commerceApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 import { useCurrency } from '../../contexts/CurrencyContext'
 import { calculateShipping } from '../../hooks/useShippingSettings'
-import { getLineTotal } from '../../utils/helpers'
+import { getLineTotal, getGstNote } from '../../utils/helpers'
 
 const COUNTRIES = [
   'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia',
@@ -70,6 +70,7 @@ const Checkout = () => {
   const dispatch = useDispatch()
   const { items, totals, shippingSettings, formatCartPrice } = useCart()
   const { formatSGD, isConverted } = useCurrency()
+  const gstMode = getGstNote(items)
   const user = useSelector(selectUser)
   const token = useSelector(selectAuth).token
 
@@ -330,14 +331,21 @@ const handlePlaceOrder = async () => {
           <span>{t('cart.shipping')}</span>
           {shippingCost === null ? '...' : formatCartPrice(shippingCost)}
         </div>
-        <div className="flex justify-between text-gray-500 dark:text-gray-400">
+        {/* <div className="flex justify-between text-gray-500 dark:text-gray-400">
           <span>{t('checkout.tax')}</span>
           <span>{formatCartPrice(taxAmount)}</span>
-        </div>
+        </div> */}
         <div className="flex justify-between font-bold text-base text-gray-900 dark:text-white pt-2 border-t border-gray-100 dark:border-gray-800">
           <span>{t('checkout.grandTotal')}</span>
           <span>{formatCartPrice(grandTotal)}</span>
         </div>
+        {gstMode && (
+          <p className="text-xs text-left text-gray-400">
+            {gstMode === 'with_gst' && t('cart.priceWithGst', 'Price is inclusive of GST')}
+            {gstMode === 'without_gst' && t('cart.priceWithoutGst', '*without GST')}
+            {gstMode === 'mixed' && t('cart.priceMixedGst', 'Prices shown include GST for some items and exclude GST for others')}
+          </p>
+        )}
         {isConverted && (
           <p className="text-xs leading-5 text-gray-500 dark:text-gray-400">
             Converted prices are shown for reference. Payment is processed in SGD. Charged as {formatSGD(grandTotal)}.
@@ -614,12 +622,19 @@ const handlePlaceOrder = async () => {
                             <span>{t('cart.shipping')}</span>
                             <span>{shippingCost === null ? '...' : formatCartPrice(shippingCost)}</span>
                           </div>
-                          <div className="flex justify-between text-gray-500 dark:text-gray-400">
+                          {/* <div className="flex justify-between text-gray-500 dark:text-gray-400">
                             <span>{t('checkout.tax')}</span><span>{formatCartPrice(taxAmount)}</span>
-                          </div>
+                          </div> */}
                           <div className="flex justify-between font-bold text-base text-gray-900 dark:text-white pt-2 border-t border-gray-100 dark:border-gray-800">
                             <span>{t('checkout.grandTotal')}</span><span>{formatCartPrice(grandTotal)}</span>
                           </div>
+                          {gstMode && (
+                            <p className="text-xs text-right text-gray-400">
+                              {gstMode === 'with_gst' && t('cart.priceWithGst', 'Prices shown include GST')}
+                              {gstMode === 'without_gst' && t('cart.priceWithoutGst', 'Prices shown exclude GST')}
+                              {gstMode === 'mixed' && t('cart.priceMixedGst', 'Prices shown include GST for some items and exclude GST for others')}
+                            </p>
+                          )}
                           {isConverted && (
                             <p className="pt-2 text-xs leading-5 text-gray-500 dark:text-gray-400">
                               Converted prices are shown for reference. Payment is processed in SGD. Charged as {formatSGD(grandTotal)}.

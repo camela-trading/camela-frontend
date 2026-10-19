@@ -27,7 +27,7 @@ import { commerceService } from '../../services/commerceApi'
 import { useGetCategoriesQuery } from '../../services/productsApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 
-const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', description_ms: '', description_zh: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [], compare_price: '', promo_buy: '', promo_free: '',} // added by darah description translations and image records
+const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', description_ms: '', description_zh: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [], compare_price: '', price_without_gst:'', price_with_gst:'', price_basis:'without_gst', promo_buy: '', promo_free: '',} // added by darah description translations and image records
 
 const resolveProductPreviewSrc = (src) => {
   if (!src) return ''
@@ -54,6 +54,18 @@ const AdminProducts = () => {
   const [bulkLoading, setBulkLoading] = useState(false)
   const [actionProductId, setActionProductId] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
+    const [taxRate, setTaxRate] = useState(0)
+
+  useEffect(() => {
+    commerceService.getStoreSettings(token)
+      .then((s) => setTaxRate(parseFloat(s?.tax_rate) || 0))
+      .catch(() => setTaxRate(0))
+  }, [token])
+
+  const calcWithGst = (without) => {
+    const n = parseFloat(without)
+    return isNaN(n) ? '' : (n * (1 + taxRate / 100)).toFixed(2)
+  }
   const fileRef = useRef(null)
 
   const PER_PAGE = 8
@@ -158,7 +170,8 @@ const AdminProducts = () => {
   const openEdit = (product) => {
     setForm({
       title: product.title || '',
-      price: String(product.price || ''),
+            price_without_gst: String(product.price_without_gst ?? product.price ?? ''),
+      price_basis: product.price_basis || 'without_gst',
       compare_price: String(product.compare_price || ''), // added by darah
       promo_buy: String(product.promo_buy || ''), // added by darah
       promo_free: String(product.promo_free || ''), // added by darah
@@ -230,17 +243,22 @@ const AdminProducts = () => {
 
   const validateForm = () => {
     if (!form.title.trim()) { toast.error('Product title is required'); return false }
-    if (!form.price || isNaN(parseFloat(form.price)) || parseFloat(form.price) < 0) { toast.error('Valid price is required'); return false }
+    if (form.price_without_gst === '' || isNaN(parseFloat(form.price_without_gst)) || parseFloat(form.price_without_gst) < 0) {
+      toast.error('Price without GST is required')
+      return false
+    }
     if (!form.category_id) { toast.error('Category is required'); return false }
     if (!form.sku.trim()) { toast.error('SKU is required'); return false }
     return true
   }
 
+
   const handleSave = async () => {
     if (!validateForm()) return
     const payload = {
       title: form.title.trim(),
-      price: parseFloat(form.price),
+            price_basis: form.price_basis,
+      price_without_gst: form.price_without_gst === '' ? null : parseFloat(form.price_without_gst),
       category_id: Number(form.category_id),
       sku: form.sku.trim(),
       description: form.description.trim() || form.title.trim(),
@@ -592,7 +610,10 @@ const AdminProducts = () => {
                     </td>
                     {/* added by darah  */}
                     <td className="px-5 py-3 text-xs">
-                      <span className="font-semibold text-gray-900 dark:text-white">{formatPrice(product.price)}</span>  
+                      <span className="font-semibold text-gray-900 dark:text-white">{formatPrice(product.price)}</span>
+                      <span className={product.price_basis === 'with_gst' ? 'ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-50 text-green-600' : 'ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-600'}>
+                        {product.price_basis === 'with_gst' ? 'GST Inclusive' : 'GST Exclusive'}
+                      </span>
                       {product.compare_price > product.price && (
                         <span className="ml-2 text-gray-400 line-through">{formatPrice(product.compare_price)}</span>
                       )}
@@ -732,49 +753,60 @@ const AdminProducts = () => {
             />
           </div>
 
-          {/* Price + Stock */}
+          {/* Row 1: Price without GST / Price with GST (tick which one becomes the selling price) */}
+                    {/* Row 1: Price without GST / Price with GST (tick which one becomes the selling price) */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label-base">Price (SGD) <span className="text-brand-500">*</span></label>
+              <label className="label-base">Price without GST (SGD) <span className="text-brand-500">*</span></label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                 <input
                   type="number"
-                  value={form.price}
-                  onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+                  value={form.price_without_gst}
+                  onChange={(e) => setForm((f) => ({ ...f, price_without_gst: e.target.value }))}
                   className="input-base pl-7"
                   placeholder="0.00"
                   step="0.01"
                   min="0"
                 />
               </div>
+              <label className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                <input
+                  type="radio"
+                  name="price_basis"
+                  checked={form.price_basis === 'without_gst'}
+                  onChange={() => setForm((f) => ({ ...f, price_basis: 'without_gst' }))}
+                />
+                Use as selling price
+              </label>
             </div>
             <div>
-              <label className="label-base">Stock Quantity</label>
-              <input
-                type="number"
-                value={form.stock}
-                onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))}
-                className="input-base"
-                placeholder="0"
-                min="0"
-              />
+              <label className="label-base">Price with GST (SGD)</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+                <input
+                  type="number"
+                  value={calcWithGst(form.price_without_gst)}
+                  readOnly
+                  className="input-base pl-7 bg-gray-50 cursor-not-allowed"
+                  placeholder="0.00"
+                />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Auto-calculated ({taxRate}% GST)</p>
+              <label className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                <input
+                  type="radio"
+                  name="price_basis"
+                  checked={form.price_basis === 'with_gst'}
+                  onChange={() => setForm((f) => ({ ...f, price_basis: 'with_gst' }))}
+                />
+                Use as selling price
+              </label>
             </div>
           </div>
 
-          {/* Usual price + Promo  added by darah*/}
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="label-base">Usual Price (crossed out)</label>
-              <input
-                type="number"
-                value={form.compare_price}
-                onChange={(e) => setForm((f) => ({ ...f, compare_price: e.target.value }))}
-                className="input-base"
-                placeholder="e.g. 3480"
-                min="0"
-              />
-            </div>
+          {/* Row 2: Promo added by darah */}
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label-base">Promo: Buy</label>
               <input
@@ -795,6 +827,32 @@ const AdminProducts = () => {
                 className="input-base"
                 placeholder="1"
                 min="1"
+              />
+            </div>
+          </div>
+
+          {/* Row 3: Usual price (crossed out) + Stock */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label-base">Usual Price (crossed out)</label>
+              <input
+                type="number"
+                value={form.compare_price}
+                onChange={(e) => setForm((f) => ({ ...f, compare_price: e.target.value }))}
+                className="input-base"
+                placeholder="e.g. 3480"
+                min="0"
+              />
+            </div>
+            <div>
+              <label className="label-base">Stock Quantity</label>
+              <input
+                type="number"
+                value={form.stock}
+                onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))}
+                className="input-base"
+                placeholder="0"
+                min="0"
               />
             </div>
           </div>

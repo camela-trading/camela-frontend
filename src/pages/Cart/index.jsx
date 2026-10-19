@@ -6,13 +6,14 @@ import { ShoppingBag, Trash2, Plus, Minus, Tag, X, ArrowRight, ArrowLeft } from 
 import { useCart } from '../../hooks/useCart'
 import { ROUTES } from '../../constants/routes'
 import { resolveApiAssetUrl } from '../../constants/config'
-import { getLineTotal } from '../../utils/helpers'
+import { getLineTotal, getGstNote } from '../../utils/helpers'
 
 const Cart = () => {
   const { t } = useTranslation()
   const { items, totals, formatCartPrice, coupon, removeFromCart, updateQuantity, applyCoupon, removeCoupon, clearCart } = useCart()
   const [couponInput, setCouponInput] = useState('')
   const [couponLoading, setCouponLoading] = useState(false)
+    const gstMode = getGstNote(items)
 
   const handleCoupon = async () => {
     if (!couponInput.trim()) return
@@ -239,7 +240,13 @@ const Cart = () => {
                   <span>{formatCartPrice(totals.total)}</span>
                 </div>
               </div>
-
+{gstMode && (
+  <p className="!mt-2 text-xs text-left text-gray-400">
+    {gstMode === 'with_gst' && t('cart.priceWithGst', 'Price is inclusive of GST')}
+    {gstMode === 'without_gst' && t('cart.priceWithoutGst', '*without GST')}
+    {gstMode === 'mixed' && t('cart.priceMixedGst', 'Prices shown include GST for some items and exclude GST for others')}
+  </p>
+)}
               <Link
                 to={ROUTES.CHECKOUT}
                 className="btn-brand btn-lg w-full justify-center gap-2"
