@@ -119,7 +119,7 @@ const Checkout = () => {
       email: user?.email || '',
       firstName: user?.name?.split(' ')[0] || '',
       lastName: user?.name?.split(' ').slice(1).join(' ') || '',
-      phone: '',
+            phone: user?.phone || '',
     },
   })
 

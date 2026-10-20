@@ -19,7 +19,7 @@ const schema = z.object({
   firstname: z.string().min(2, 'First name is required'),
   lastname: z.string().min(2, 'Last name is required'),
   email: z.string().email('Valid email required'),
-  phone: z.string().optional(),
+  phone: z.string().min(8, 'Phone number is required'),
   username: z.string().min(3, 'Username must be at least 3 characters'),
 })
 
@@ -235,7 +235,7 @@ const Profile = () => {
               {errors.email && <p className="mt-1 text-xs text-brand-600">{errors.email.message}</p>}
             </div>
             <div>
-              <label className="label-base">{t('checkout.phone')} <span className="text-gray-400 font-normal">({t('common.optional')})</span></label>
+              <label className="label-base">{t('checkout.phone')} </label>
               <div className="relative">
                 <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input {...register('phone')} type="tel" placeholder="+1 (555) 000-0000" className="input-base pl-10" />
