@@ -27,7 +27,7 @@ import { commerceService } from '../../services/commerceApi'
 import { useGetCategoriesQuery } from '../../services/productsApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 
-const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', description_ms: '', description_zh: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [], compare_price: '', price_without_gst:'', price_with_gst:'', price_basis:'without_gst', promo_buy: '', promo_free: '',} // added by darah description translations and image records
+const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', description_ms: '', description_zh: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [], compare_price: '', price_without_gst:'', price_with_gst:'', price_basis:'without_gst', promo_buy: '', promo_free: '',nonmember_price_without_gst: '', nonmember_price_basis: 'without_gst',} // added by darah description translations and image records
 
 const resolveProductPreviewSrc = (src) => {
   if (!src) return ''
@@ -173,6 +173,8 @@ const AdminProducts = () => {
             price_without_gst: String(product.price_without_gst ?? product.price ?? ''),
       price_basis: product.price_basis || 'without_gst',
       compare_price: String(product.compare_price || ''), // added by darah
+      nonmember_price_without_gst: String(product.nonmember_price_without_gst ?? ''),
+      nonmember_price_basis: product.nonmember_price_basis || 'without_gst',  
       promo_buy: String(product.promo_buy || ''), // added by darah
       promo_free: String(product.promo_free || ''), // added by darah
       category_id: String(product.category_id || ''),
@@ -259,6 +261,8 @@ const AdminProducts = () => {
       title: form.title.trim(),
             price_basis: form.price_basis,
       price_without_gst: form.price_without_gst === '' ? null : parseFloat(form.price_without_gst),
+      nonmember_price_without_gst: form.nonmember_price_without_gst === '' ? null : parseFloat(form.nonmember_price_without_gst),
+nonmember_price_basis: form.nonmember_price_basis,
       category_id: Number(form.category_id),
       sku: form.sku.trim(),
       description: form.description.trim() || form.title.trim(),
@@ -804,7 +808,56 @@ const AdminProducts = () => {
               </label>
             </div>
           </div>
-
+{/* Non-member price */}
+<div className="grid grid-cols-2 gap-3">
+  <div>
+    <label className="label-base">Non-member price without GST (SGD)</label>
+    <div className="relative">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+      <input
+        type="number"
+        value={form.nonmember_price_without_gst}
+        onChange={(e) => setForm((f) => ({ ...f, nonmember_price_without_gst: e.target.value }))}
+        className="input-base pl-7"
+        placeholder={form.compare_price || '0.00'}
+        step="0.01"
+        min="0"
+      />
+    </div>
+    <label className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+      <input
+        type="radio"
+        name="nonmember_price_basis"
+        checked={form.nonmember_price_basis === 'without_gst'}
+        onChange={() => setForm((f) => ({ ...f, nonmember_price_basis: 'without_gst' }))}
+      />
+      Use as selling price
+    </label>
+  </div>
+  <div>
+    <label className="label-base">Non-member price with GST (SGD)</label>
+    <div className="relative">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+      <input
+        type="number"
+        value={calcWithGst(form.nonmember_price_without_gst || form.compare_price)}
+        readOnly
+        className="input-base pl-7 bg-gray-50 cursor-not-allowed"
+        placeholder="0.00"
+      />
+    </div>
+    <p className="text-xs text-gray-400 mt-1">Auto-calculated ({taxRate}% GST). Empty = uses Usual Price.</p>
+    <label className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+      <input
+        type="radio"
+        name="nonmember_price_basis"
+        checked={form.nonmember_price_basis === 'with_gst'}
+        onChange={() => setForm((f) => ({ ...f, nonmember_price_basis: 'with_gst' }))}
+      />
+      Use as selling price
+    </label>
+  </div>
+</div>
           {/* Row 2: Promo added by darah */}
           <div className="grid grid-cols-2 gap-3">
             <div>

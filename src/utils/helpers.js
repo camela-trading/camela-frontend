@@ -28,13 +28,13 @@ export const filterProducts = (products, filters) => {
   })
 }
 
-export const getLineTotal = (product, qty) => {  // Calculate line total considering promo offers | added by Darah
+export const getLineTotal = (product, qty) => { //calculate line total considering promos
+  if (product.is_member === false) return product.price * qty
   const { promo_buy, promo_free, price } = product
   if (!promo_buy || !promo_free) return price * qty
   const free = Math.floor(qty / (promo_buy + promo_free)) * promo_free
   return price * (qty - free)
 }
-
 export const getGstNote = (items = []) => {
   if (!items.length) return null
   const bases = new Set(items.map((i) => i.price_basis || 'without_gst'))

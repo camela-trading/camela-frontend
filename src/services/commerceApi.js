@@ -20,6 +20,9 @@ const cartItem = (item) => ({
   promo_buy: item.product.promo_buy,
   promo_free: item.product.promo_free,
   price_basis: item.product.price_basis,
+is_member: item.product.is_member,
+member_price: item.product.member_price,
+member_compare_price: item.product.member_compare_price,
 })
 
 const order = (value) => ({
@@ -79,6 +82,8 @@ const adminProduct = (product) => ({
     price_without_gst: product.price_without_gst,
     price_with_gst: product.price_with_gst,
     price_basis: product.price_basis,
+    nonmember_price_without_gst: product.nonmember_price_without_gst,
+    nonmember_price_basis: product.nonmember_price_basis,
 })
 
 

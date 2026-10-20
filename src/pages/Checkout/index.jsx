@@ -93,7 +93,7 @@ const Checkout = () => {
   })), [items, shippingSettings])
   const selectedShipping = shippingMethods.find((method) => method.id === selectedShippingId) ?? shippingMethods[0]
   const shippingCost = selectedShipping.total
-  const taxAmount = totals.tax
+  // const taxAmount = totals.tax
 
   const grandTotal = Number(
 
@@ -101,9 +101,7 @@ const Checkout = () => {
 
           totals.subtotal +
 
-          (shippingCost ?? 0) +
-
-          taxAmount -
+          (shippingCost ?? 0) -
 
           totals.discount
 

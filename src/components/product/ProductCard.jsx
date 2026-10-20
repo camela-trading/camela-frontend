@@ -94,6 +94,16 @@ const ProductCard = ({ product, view = 'grid' }) => {
               </span>
             )}
           </div>
+          {product.is_member === false && product.member_price != null && (
+            <Link to="/#join-family" className="block text-xs mt-1">
+              <span className="text-gray-500">Member price: </span>
+              {product.member_compare_price && (
+                <span className="line-through text-gray-400 mr-1">{formatPrice(product.member_compare_price)}</span>
+              )}
+              <span className="font-semibold text-brand-600">{formatPrice(product.member_price)}</span>
+              <span className="block text-brand-600 underline">Join the family to avail discounts</span>
+            </Link>
+          )}
             <button
               onClick={() => addToCart(product)}
               className="btn-brand btn-sm gap-2"
@@ -205,6 +215,16 @@ const ProductCard = ({ product, view = 'grid' }) => {
                 Buy {product.promo_buy} Get {product.promo_free} Free
               </span>
             )}
+          {product.is_member === false && product.member_price != null && (
+            <Link to="/#join-family" className="block text-xs mt-1">
+              <span className="text-gray-500">Member price: </span>
+              {product.member_compare_price && (
+                <span className="line-through text-gray-400 mr-1">{formatPrice(product.member_compare_price)}</span>
+              )}
+              <span className="font-semibold text-brand-600">{formatPrice(product.member_price)}</span>
+              <span className="block text-brand-600 underline">Join the family to avail discounts</span>
+            </Link>
+          )}
           </div>
           <motion.button
             whileTap={{ scale: 0.95 }}

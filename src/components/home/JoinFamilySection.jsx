@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { CheckCircle, ArrowRight, UserPlus, Briefcase, Globe } from 'lucide-react'
+import { useEffect } from 'react'
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 28 },
@@ -48,6 +49,12 @@ const btnBase = {
 
 const JoinFamilySection = () => {
   const { t } = useTranslation()
+  const { hash } = useLocation()
+  useEffect(() => {
+    if (hash === '#join-family') {
+      document.getElementById('join-family')?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [hash])
 
   const CARDS = [
     {
@@ -80,7 +87,7 @@ const JoinFamilySection = () => {
   ]
 
   return (
-    <section className="py-24 bg-gray-950">
+    <section id="join-family" className="py-24 bg-gray-950">
       <div className="container max-w-5xl">
         <motion.div {...fadeUp(0)} className="text-center mb-14">
           <p className="text-xs font-semibold uppercase tracking-widest text-brand-400 mb-3">

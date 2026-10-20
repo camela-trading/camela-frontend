@@ -148,10 +148,25 @@ const Cart = () => {
                           <p className="text-xs text-gray-400">{formatCartPrice(item.price)} {t('cart.each')}</p>
                           {/* added by darah, show the promo under each price */}
                           {item.promo_buy > 0 && item.promo_free > 0 && (
-                            <p className="text-xs text-brand-600">
-                              Buy {item.promo_buy} Get {item.promo_free} Free
-                              {item.quantity >= item.promo_buy + item.promo_free && ' (applied)'}
-                            </p>
+                            item.is_member === false ? (
+                              <Link to="/#join-family" className="text-xs text-brand-600 underline">
+                                Buy {item.promo_buy} Get {item.promo_free} Free · Join the family to avail discounts
+                              </Link>
+                            ) : (
+                              <p className="text-xs text-brand-600">
+                                Buy {item.promo_buy} Get {item.promo_free} Free
+                                {item.quantity >= item.promo_buy + item.promo_free && ' (applied)'}
+                              </p>
+                            )
+                          )}
+                          {item.is_member === false && item.member_price != null && (
+                            <Link to="/#join-family" className="block text-xs mt-1">
+                              <span className="text-gray-500">Member price: </span>
+                              {item.member_compare_price && (
+                                <span className="line-through text-gray-400 mr-1">{formatCartPrice(item.member_compare_price)}</span>
+                              )}
+                              <span className="font-semibold text-brand-600">{formatCartPrice(item.member_price)}</span>
+                            </Link>
                           )}
                         </div>
                       </div>
