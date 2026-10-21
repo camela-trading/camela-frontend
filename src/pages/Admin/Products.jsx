@@ -27,7 +27,7 @@ import { commerceService } from '../../services/commerceApi'
 import { useGetCategoriesQuery } from '../../services/productsApi'
 import { resolveApiAssetUrl } from '../../constants/config'
 
-const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', description_ms: '', description_zh: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [], compare_price: '', price_without_gst:'', price_with_gst:'', price_basis:'without_gst', promo_buy: '', promo_free: '',nonmember_price_without_gst: '', nonmember_price_basis: 'without_gst',} // added by darah description translations and image records
+const EMPTY_FORM = { title: '', sku: '', price: '', category_id: '', description: '', description_ms: '', description_zh: '', image: '', stock: '', imagePreview: '', images: [], imageRecords: [], files: [], compare_price: '', price_without_gst:'', price_with_gst:'', price_basis:'without_gst', promo_buy: '', promo_free: '',nonmember_price_without_gst: '', nonmember_price_basis: 'without_gst',length: '', width: '', height: '', weight: '', weight_unit: 'G',} // added by darah description translations and image records
 
 const resolveProductPreviewSrc = (src) => {
   if (!src) return ''
@@ -188,6 +188,11 @@ const AdminProducts = () => {
       images: product.images || (product.image ? [product.image] : []),
        imageRecords: product.imageRecords || [], // added by darah
       files: [],
+      length: String(product.length ?? ''),
+width: String(product.width ?? ''),
+height: String(product.height ?? ''),
+weight: String(product.weight ?? ''),
+weight_unit: product.weight_unit || 'G',
     })
     setEditProduct(product)
   }
@@ -251,6 +256,13 @@ const AdminProducts = () => {
     }
     if (!form.category_id) { toast.error('Category is required'); return false }
     if (!form.sku.trim()) { toast.error('SKU is required'); return false }
+    for (const k of ['length', 'width', 'height']) {
+  const v = parseFloat(form[k])
+  if (isNaN(v) || v <= 0) { toast.error(`Parcel ${k} (cm) is required`); return false }
+}
+if (form.weight !== '' && parseFloat(form.weight) <= 0) {
+  toast.error('Parcel weight must be greater than 0'); return false
+}
     return true
   }
 
@@ -274,6 +286,11 @@ nonmember_price_basis: form.nonmember_price_basis,
       compare_price: String(form.compare_price || ''), // added by darah
       promo_buy: String(form.promo_buy || ''), // added by darah
       promo_free: String(form.promo_free || ''), // added by darah
+      length: parseFloat(form.length),
+width: parseFloat(form.width),
+height: parseFloat(form.height),
+weight: form.weight === '' ? null : parseFloat(form.weight),
+weight_unit: form.weight_unit || 'G',
     }
     try {
       const savedProduct = editProduct
@@ -909,7 +926,50 @@ nonmember_price_basis: form.nonmember_price_basis,
               />
             </div>
           </div>
+{/* Parcel dimensions */}
+<div className="grid grid-cols-3 gap-3">
+  {['length', 'width', 'height'].map((k) => (
+    <div key={k}>
+      <label className="label-base capitalize">{k} (cm) <span className="text-brand-500">*</span></label>
+      <input
+        type="number"
+        value={form[k]}
+        onChange={(e) => setForm((f) => ({ ...f, [k]: e.target.value }))}
+        className="input-base"
+        placeholder="0"
+        min="0"
+        step="0.01"
+      />
+    </div>
+  ))}
+</div>
 
+{/* Parcel weight */}
+<div className="grid grid-cols-2 gap-3">
+  <div>
+    <label className="label-base">Parcel Weight</label>
+    <input
+      type="number"
+      value={form.weight}
+      onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))}
+      className="input-base"
+      placeholder="0"
+      min="0"
+      step="0.01"
+    />
+  </div>
+  <div>
+    <label className="label-base">Weight Unit</label>
+    <select
+      value={form.weight_unit}
+      onChange={(e) => setForm((f) => ({ ...f, weight_unit: e.target.value }))}
+      className="input-base"
+    >
+      <option value="G">G</option>
+      <option value="Kg">Kg</option>
+    </select>
+  </div>
+</div>
           {/* Category */}
           <div>
             <label className="label-base">Category <span className="text-brand-500">*</span></label>

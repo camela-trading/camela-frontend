@@ -84,8 +84,13 @@ const adminProduct = (product) => ({
     price_basis: product.price_basis,
     nonmember_price_without_gst: product.nonmember_price_without_gst,
     nonmember_price_basis: product.nonmember_price_basis,
-})
 
+    length: product.length,
+    width: product.width,
+    height: product.height,
+    weight: product.weight,
+    weight_unit: product.weight_unit,
+})
 
 export const commerceService = {
   
