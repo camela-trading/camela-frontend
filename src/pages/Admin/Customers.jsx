@@ -29,6 +29,13 @@ const AdminCustomers = () => {
   const [viewCustomer, setViewCustomer] = useState(null)
   const [page, setPage] = useState(1)
   const [customers, setCustomers] = useState([])
+  const [typeFilter, setTypeFilter] = useState('all')
+
+const TYPE_LABELS = {
+  nonmember: 'Non-member',
+  member: 'Member',
+  'distribution-partner': 'Distribution Partner', 'Importer': 'Importer', 
+}
 
   const { token } = useSelector(selectAuth)
 
@@ -61,6 +68,7 @@ const AdminCustomers = () => {
       const withinDate = (!from || joined >= from) && (!to || joined <= to)
       return (
         (statusFilter === 'all' || c.status === statusFilter) &&
+        (typeFilter === 'all' || (c.membership_type || 'nonmember') === typeFilter) &&
         (!q || c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || (c.phone && c.phone.includes(q))) &&
         withinDate
       )
@@ -152,6 +160,16 @@ const AdminCustomers = () => {
             </button>
           ))}
         </div>
+        <select
+          value={typeFilter}
+          onChange={(e) => { setTypeFilter(e.target.value); setPage(1) }}
+          className="input-base h-9 min-w-[150px] px-3 py-1.5 text-xs font-medium rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 focus:border-gray-400 dark:focus:border-gray-500"
+        >
+          <option value="all">All Types</option>
+          {Object.entries(TYPE_LABELS).map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
+        </select>
         <div className="flex items-center gap-2">
           <input
             type="date"
@@ -181,6 +199,7 @@ const AdminCustomers = () => {
                 <th className="px-5 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">{t('admin.location')}</th>
                 <th className="px-5 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Orders</th>
                 <th className="px-5 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total Spent</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
                 <th className="px-5 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">{t('admin.joined')}</th>
                 <th className="px-5 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">{t('admin.status')}</th>
                 <th className="px-5 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">{t('admin.actions')}</th>
@@ -209,6 +228,11 @@ const AdminCustomers = () => {
                   <td className="px-5 py-3 text-xs text-gray-500 dark:text-gray-400">{customer.location}</td>
                   <td className="px-5 py-3 text-xs font-medium text-gray-900 dark:text-white">{customer.orders}</td>
                   <td className="px-5 py-3 text-xs font-semibold text-gray-900 dark:text-white">{formatPrice(customer.spent)}</td>
+                  <td className="px-5 py-3">
+  <span className="text-[10px] px-2.5 py-1 rounded-full font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 whitespace-nowrap">
+    {TYPE_LABELS[customer.membership_type] || TYPE_LABELS.nonmember}
+  </span>
+</td>
                   <td className="px-5 py-3 text-xs text-gray-500 dark:text-gray-400">{formatDateShort(customer.joined)}</td>
                   <td className="px-5 py-3">
                     <span className={`text-[10px] px-2.5 py-1 rounded-full font-semibold ${customer.status === 'active' ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
