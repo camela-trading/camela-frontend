@@ -25,6 +25,7 @@ const ProductCard = ({ product, view = 'grid' }) => {
   const originalPrice = product.compare_price
   const isSale = Number(originalPrice) > Number(product.price)
   const hasPromo = product.promo_buy > 0 && product.promo_free > 0
+  const showJoinFamilyCTA = product.is_member === false && (product.member_price != null || isSale || hasPromo)
 
   const productImages = product.images && product.images.length > 0 ? product.images : [product.image]
   const currentImage =
@@ -94,13 +95,13 @@ const ProductCard = ({ product, view = 'grid' }) => {
               </span>
             )}
           </div>
-          {product.is_member === false && product.member_price != null && (
+          {showJoinFamilyCTA && (
             <Link to="/#join-family" className="block text-xs mt-1">
               <span className="text-gray-500">Member price: </span>
               {product.member_compare_price && (
                 <span className="line-through text-gray-400 mr-1">{formatPrice(product.member_compare_price)}</span>
               )}
-              <span className="font-semibold text-brand-600">{formatPrice(product.member_price)}</span>
+              <span className="font-semibold text-brand-600">{formatPrice(product.member_price ?? product.price)}</span>
               <span className="block text-brand-600 underline">Join the family to avail discounts</span>
             </Link>
           )}
@@ -215,13 +216,13 @@ const ProductCard = ({ product, view = 'grid' }) => {
                 Buy {product.promo_buy} Get {product.promo_free} Free
               </span>
             )}
-          {product.is_member === false && product.member_price != null && (
+          {showJoinFamilyCTA && (
             <Link to="/#join-family" className="block text-xs mt-1">
               <span className="text-gray-500">Member price: </span>
               {product.member_compare_price && (
                 <span className="line-through text-gray-400 mr-1">{formatPrice(product.member_compare_price)}</span>
               )}
-              <span className="font-semibold text-brand-600">{formatPrice(product.member_price)}</span>
+              <span className="font-semibold text-brand-600">{formatPrice(product.member_price ?? product.price)}</span>
               <span className="block text-brand-600 underline">Join the family to avail discounts</span>
             </Link>
           )}

@@ -147,7 +147,7 @@ const ProductDetail = () => {
             <div className="flex items-center gap-6 p-5 bg-surface-secondary dark:bg-surface-dark-secondary rounded-2xl">
               <div className="text-center">
                 <p className="text-5xl font-display font-bold text-gray-900 dark:text-white">
-                  {product.rating.rate}
+                  {/* {product.rating.rate} */}
                 </p>
                 <Rating rating={product.rating.rate} showCount={false} size="sm" className="justify-center mt-1" />
                 <p className="text-xs text-gray-400 mt-1">{product.rating.count} {t('product.reviews')}</p>

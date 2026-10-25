@@ -244,17 +244,31 @@ const AdminOrders = () => {
                     <div className="flex justify-between"><span>Tracking ID</span><span className="font-mono">{orderDetails.jnt_tracking_id}</span></div>
                     <div className="flex justify-between"><span>Status</span><span>{getJntStatusLabel(orderDetails.jnt_status)}</span></div>
                   </div>
-                  <button
-                    onClick={async () => {
-                      try {
-                        const res = await commerceService.getJntLabel(token, statusOrder.id)
-                        window.open(res.connote_label_url, '_blank')
-                      } catch { toast.error('Label not ready. Try again in a minute.') }
-                    }}
-                    className="btn-secondary mt-3"
-                  >
-                    Print label
-                  </button>
+<div className="mt-3 flex gap-2">
+  <button
+    onClick={async () => {
+      try {
+        const updated = await commerceService.refreshJntStatus(token, statusOrder.id)
+        setOrderDetails(updated)
+        toast.success('J&T status refreshed.')
+      } catch { toast.error('Could not refresh J&T status.') }
+    }}
+    className="btn-secondary"
+  >
+    Refresh status
+  </button>
+  <button
+    onClick={async () => {
+      try {
+        const res = await commerceService.getJntLabel(token, statusOrder.id)
+        window.open(res.connote_label_url, '_blank')
+      } catch { toast.error('Label not ready. Try again in a minute.') }
+    }}
+    className="btn-secondary"
+  >
+    Print label
+  </button>
+</div>
                 </section>
               )}
             <section className="rounded-xl border border-yellow-500/40 bg-yellow-50/50 p-4 dark:bg-yellow-500/5">

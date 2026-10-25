@@ -112,7 +112,10 @@ export const commerceService = {
     const response = await client(token).get('/cart')
     return response.data.data.items.map(cartItem)
   },
-
+async refreshJntStatus(token, orderId) {
+  const response = await client(token).post(`/admin/orders/${orderId}/refresh-jnt`)
+  return response.data.data
+},
   async getStoreSettings(token) {
 
       const response = await client(token).get(

@@ -13,7 +13,13 @@ const Cart = () => {
   const { items, totals, formatCartPrice, coupon, removeFromCart, updateQuantity, applyCoupon, removeCoupon, clearCart } = useCart()
   const [couponInput, setCouponInput] = useState('')
   const [couponLoading, setCouponLoading] = useState(false)
-    const gstMode = getGstNote(items)
+  const gstMode = getGstNote(items)
+  const showJoinFamilyDiscountMessage = (item) => {
+    if (item.is_member !== false) return false
+    const hasSale = Number(item.compare_price || 0) > Number(item.price || 0)
+    const hasPromo = item.promo_buy > 0 && item.promo_free > 0
+    return !hasPromo && (item.member_price != null || hasSale)
+  }
 
   const handleCoupon = async () => {
     if (!couponInput.trim()) return
@@ -159,13 +165,14 @@ const Cart = () => {
                               </p>
                             )
                           )}
-                          {item.is_member === false && item.member_price != null && (
+                          {showJoinFamilyDiscountMessage(item) && (
                             <Link to="/#join-family" className="block text-xs mt-1">
                               <span className="text-gray-500">Member price: </span>
                               {item.member_compare_price && (
                                 <span className="line-through text-gray-400 mr-1">{formatCartPrice(item.member_compare_price)}</span>
                               )}
-                              <span className="font-semibold text-brand-600">{formatCartPrice(item.member_price)}</span>
+                              <span className="font-semibold text-brand-600">{formatCartPrice(item.member_price ?? item.price)}</span>
+                              <span className="block text-brand-600 underline">Join the family to avail discounts</span>
                             </Link>
                           )}
                         </div>

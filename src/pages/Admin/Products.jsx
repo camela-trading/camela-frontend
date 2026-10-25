@@ -250,8 +250,11 @@ weight_unit: product.weight_unit || 'G',
 
   const validateForm = () => {
     if (!form.title.trim()) { toast.error('Product title is required'); return false }
-    if (form.price_without_gst === '' || isNaN(parseFloat(form.price_without_gst)) || parseFloat(form.price_without_gst) < 0) {
-      toast.error('Price without GST is required')
+    const sellingPrice = parseFloat(form.price_basis === 'with_gst'
+      ? calcWithGst(form.price_without_gst)
+      : form.price_without_gst)
+    if (form.price_without_gst === '' || isNaN(sellingPrice) || sellingPrice < 0) {
+      toast.error('Price is required')
       return false
     }
     if (!form.category_id) { toast.error('Category is required'); return false }
@@ -269,10 +272,15 @@ if (form.weight !== '' && parseFloat(form.weight) <= 0) {
 
   const handleSave = async () => {
     if (!validateForm()) return
+    const sellingPrice = parseFloat(form.price_basis === 'with_gst'
+      ? calcWithGst(form.price_without_gst)
+      : form.price_without_gst)
     const payload = {
       title: form.title.trim(),
+            price: sellingPrice,
             price_basis: form.price_basis,
       price_without_gst: form.price_without_gst === '' ? null : parseFloat(form.price_without_gst),
+      price_with_gst: form.price_without_gst === '' ? null : parseFloat(calcWithGst(form.price_without_gst)),
       nonmember_price_without_gst: form.nonmember_price_without_gst === '' ? null : parseFloat(form.nonmember_price_without_gst),
 nonmember_price_basis: form.nonmember_price_basis,
       category_id: Number(form.category_id),
