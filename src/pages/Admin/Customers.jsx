@@ -33,6 +33,7 @@ const AdminCustomers = () => {
   const [typeFilter, setTypeFilter] = useState('all')
 
 const TYPE_LABELS = {
+  admin: 'Admin',
   nonmember: 'Non-member',
   member: 'Member',
   'distribution-partner': 'Distribution Partner', 'Importer': 'Importer', 
@@ -69,7 +70,8 @@ const TYPE_LABELS = {
       const withinDate = (!from || joined >= from) && (!to || joined <= to)
       return (
         (statusFilter === 'all' || c.status === statusFilter) &&
-        (typeFilter === 'all' || (c.membership_type || 'nonmember') === typeFilter) &&
+        (typeFilter === 'all' ||
+  (typeFilter === 'admin' ? c.is_admin : (c.membership_type || 'nonmember') === typeFilter)) &&
         (!q || c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || (c.phone && c.phone.includes(q))) &&
         withinDate
       )
@@ -138,7 +140,7 @@ const TYPE_LABELS = {
         customer.location || '',
         customer.orders ?? 0,
         customer.spent ?? 0,
-        TYPE_LABELS[customer.membership_type] || TYPE_LABELS.nonmember,
+        (customer.is_admin ? 'Admin, ' : '') + (TYPE_LABELS[customer.membership_type] || TYPE_LABELS.nonmember),
         formatDateShort(customer.joined || new Date().toISOString()),
         customer.status || 'inactive',
       ]
@@ -295,9 +297,18 @@ const TYPE_LABELS = {
                   <td className="px-5 py-3 text-xs font-medium text-gray-900 dark:text-white">{customer.orders}</td>
                   <td className="px-5 py-3 text-xs font-semibold text-gray-900 dark:text-white">{formatPrice(customer.spent)}</td>
                   <td className="px-5 py-3">
-  <span className="text-[10px] px-2.5 py-1 rounded-full font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 whitespace-nowrap">
-    {TYPE_LABELS[customer.membership_type] || TYPE_LABELS.nonmember}
-  </span>
+<td className="px-5 py-3">
+  <div className="flex flex-wrap gap-1">
+    {customer.is_admin && (
+      <span className="text-[10px] px-2.5 py-1 rounded-full font-semibold bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 whitespace-nowrap">
+        Admin
+      </span>
+    )}
+    <span className="text-[10px] px-2.5 py-1 rounded-full font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 whitespace-nowrap">
+      {TYPE_LABELS[customer.membership_type] || TYPE_LABELS.nonmember}
+    </span>
+  </div>
+</td>
 </td>
                   <td className="px-5 py-3 text-xs text-gray-500 dark:text-gray-400">{formatDateShort(customer.joined)}</td>
                   <td className="px-5 py-3">
