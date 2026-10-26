@@ -9,6 +9,7 @@ import {
   Phone,
   MapPin,
   Ban,
+  Download,
 } from 'lucide-react'
 import { formatPrice, formatDateShort } from '../../utils/formatters'
 import Modal from '../../components/ui/Modal'
@@ -106,6 +107,63 @@ const TYPE_LABELS = {
     toast.success(`${customer.name} ${customer.status === 'active' ? t('admin.deactivated') : t('admin.activated')}`)
   }
 
+  const handleExportCustomers = () => {
+    const rows = filtered.length ? filtered : customers
+    if (!rows.length) {
+      toast.error('No customer data to export.')
+      return
+    }
+
+    const headers = [
+      'Customer ID',
+      'Full Name',
+      'Email',
+      'Phone',
+      'Location',
+      'Orders',
+      'Total Spent',
+      'Membership Type',
+      'Joined',
+      'Status',
+    ]
+
+    const csvRows = [headers]
+
+    rows.forEach((customer) => {
+      const values = [
+        customer.display_id || customer.id || '',
+        customer.name || '',
+        customer.email || '',
+        customer.phone || '',
+        customer.location || '',
+        customer.orders ?? 0,
+        customer.spent ?? 0,
+        TYPE_LABELS[customer.membership_type] || TYPE_LABELS.nonmember,
+        formatDateShort(customer.joined || new Date().toISOString()),
+        customer.status || 'inactive',
+      ]
+
+      csvRows.push(
+        values.map((value) => {
+          const stringValue = String(value ?? '').replace(/\r?\n/g, ' ')
+          return `"${stringValue.replace(/"/g, '""')}"`
+        })
+      )
+    })
+
+    const csvContent = csvRows.map((row) => row.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'customer-details.csv')
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+    toast.success('Customer details exported successfully.')
+  }
+
   const SortIcon = ({ field }) =>
     sortField === field
       ? sortDir === 'asc' ? <ChevronUp size={11} /> : <ChevronDown size={11} />
@@ -185,6 +243,14 @@ const TYPE_LABELS = {
             className="input-base h-9 text-xs"
           />
         </div>
+        <button
+          type="button"
+          onClick={handleExportCustomers}
+          className="inline-flex items-center gap-2 h-9 px-3 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-medium hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"
+        >
+          <Download size={14} />
+          Export Excel
+        </button>
       </div>
 
       {/* Table */}
