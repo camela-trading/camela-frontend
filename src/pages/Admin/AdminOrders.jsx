@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { Search, ChevronDown, Eye, Loader2, MapPin, CreditCard, Package } from 'lucide-react'
+import { Search, ChevronDown, Eye, Loader2, MapPin, CreditCard, Package, Download } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Modal from '../../components/ui/Modal'
 import { commerceService } from '../../services/commerceApi'
@@ -56,6 +56,50 @@ const AdminOrders = () => {
     const matchesStatus = statusFilter === 'all' || o.status === statusFilter
     return matchesSearch && matchesStatus
   })
+
+  const handleExportOrders = () => {
+    const rows = filteredOrders.length ? filteredOrders : combinedOrders
+
+    if (!rows.length) {
+      toast.error('No order data to export.')
+      return
+    }
+
+    const headers = ['Order ID', 'Customer', 'Email', 'Items', 'Total', 'Payment', 'Date', 'Status']
+    const csvRows = [headers]
+
+    rows.forEach((order) => {
+      const values = [
+        order.orderNumber || '',
+        order.customer || '',
+        order.email || '',
+        order.items ?? 0,
+        order.total ?? 0,
+        order.payment || '',
+        order.date ? formatDateShort(order.date) : '',
+        order.status || '',
+      ]
+
+      csvRows.push(
+        values.map((value) => {
+          const stringValue = String(value ?? '').replace(/\r?\n/g, ' ')
+          return `"${stringValue.replace(/"/g, '""')}"`
+        })
+      )
+    })
+
+    const csvContent = csvRows.map((row) => row.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'orders-report.csv')
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+    toast.success('Orders report exported successfully.')
+  }
 
   const totalPages = Math.ceil(filteredOrders.length / PER_PAGE)
   const paginated = filteredOrders.slice((page - 1) * PER_PAGE, page * PER_PAGE)
@@ -133,6 +177,17 @@ const AdminOrders = () => {
           placeholder={t('admin.searchOrders')}
           className="input-base pl-10 h-9"
         />
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={handleExportOrders}
+          className="inline-flex items-center gap-2 h-9 px-3 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-medium hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"
+        >
+          <Download size={14} />
+          Export Excel
+        </button>
       </div>
 
       <div className="card overflow-hidden">

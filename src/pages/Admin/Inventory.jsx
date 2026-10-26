@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSelector } from 'react-redux'
-import { Search, AlertTriangle, Package, Plus, Minus, Check } from 'lucide-react'
+import { Search, AlertTriangle, Package, Plus, Minus, Check, Download } from 'lucide-react'
 import { formatPrice } from '../../utils/formatters'
 import toast from 'react-hot-toast'
 import { selectAuth } from '../../features/auth/authSlice'
@@ -77,6 +77,48 @@ const AdminInventory = () => {
     return t('admin.inStock')
   }
 
+  const handleExportInventory = () => {
+    const rows = filtered.length ? filtered : products
+
+    if (!rows.length) {
+      toast.error('No inventory data to export.')
+      return
+    }
+
+    const headers = ['Product Name', 'Category', 'Price', 'Stock', 'Status']
+    const csvRows = [headers]
+
+    rows.forEach((product) => {
+      const stock = getStock(product)
+      const values = [
+        product.title || '',
+        product.category || '',
+        product.price ?? 0,
+        stock,
+        stock === 0 ? 'Out of Stock' : stock <= threshold ? 'Low Stock' : 'In Stock',
+      ]
+
+      csvRows.push(
+        values.map((value) => {
+          const stringValue = String(value ?? '').replace(/\r?\n/g, ' ')
+          return `"${stringValue.replace(/"/g, '""')}"`
+        })
+      )
+    })
+
+    const csvContent = csvRows.map((row) => row.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'inventory-report.csv')
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+    toast.success('Inventory report exported successfully.')
+  }
+
   return (
     <div className="p-6 space-y-5">
       <div>
@@ -117,6 +159,14 @@ const AdminInventory = () => {
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          onClick={handleExportInventory}
+          className="inline-flex items-center gap-2 h-9 px-3 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-medium hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"
+        >
+          <Download size={14} />
+          Export Excel
+        </button>
       </div>
 
       {/* Table */}
