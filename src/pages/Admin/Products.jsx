@@ -446,7 +446,21 @@ weight_unit: form.weight_unit || 'G',
       setCategorySaving(false)
     }
   }
+  const handleDeleteCategory = async (category) => {
+    if (!window.confirm(`Delete category "${category.name}"?`)) return
 
+    try {
+      setCategorySaving(true)
+      await commerceService.deleteAdminCategory(token, category.id)
+      toast.success('Category deleted')
+      if (categoryFilter === category.name) setCategoryFilter('')
+      await refetchCategories()
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Unable to delete category')
+    } finally {
+      setCategorySaving(false)
+    }
+  }
   // aded by darah
 
   const closeModal = () => {
@@ -1071,9 +1085,14 @@ weight_unit: form.weight_unit || 'G',
                       </button>
                     </>
                   ) : (
-                    <button onClick={() => startEditCategory(category)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                      <Pencil size={13} />
-                    </button>
+                    <>
+                      <button onClick={() => startEditCategory(category)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                        <Pencil size={13} />
+                      </button>
+                      <button onClick={() => handleDeleteCategory(category)} disabled={categorySaving} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-40">
+                        <Trash2 size={13} />
+                      </button>
+                    </>
                   )}
                 </div>
               </div>

@@ -108,6 +108,10 @@ export const commerceService = {
     return response.data.data
   },
 
+  async deleteAdminCategory(token, id) {
+    await client(token).delete(`/admin/categories/${id}`)
+  },
+
   async getCart(token) {
     const response = await client(token).get('/cart')
     return response.data.data.items.map(cartItem)
